@@ -210,7 +210,8 @@ if "%1" NEQ "" (
 
 if "%HLSL_BLD_DIR%"=="" (
   echo Missing build directory.
-  exit /b 1
+  
+  set HLSL_BLD_DIR="F:/hlsl.bin/"
 )
 
 if "%CMAKE_PATH%"=="" (

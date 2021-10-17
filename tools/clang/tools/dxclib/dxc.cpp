@@ -328,10 +328,10 @@ int DxcContext::ActOnBlob(IDxcBlob *pBlob, IDxcBlob *pDebugBlob, LPCWSTR pDebugB
        m_Opts.ExtractPrivateFile.empty() &&
        m_Opts.VerifyRootSignatureSource.empty() && !m_Opts.ExtractRootSignature);
 
-  if (!needDisassembly)
-    return retVal;
+
 
   CComPtr<IDxcBlobEncoding> pDisassembleResult;
+
 
   // SPIRV Change Starts
 #ifdef ENABLE_SPIRV_CODEGEN
@@ -364,6 +364,16 @@ int DxcContext::ActOnBlob(IDxcBlob *pBlob, IDxcBlob *pDebugBlob, LPCWSTR pDebugB
   }
 #endif // ENABLE_SPIRV_CODEGEN
   // SPIRV Change Ends
+
+
+
+  llvm::Twine varName = llvm::Twine("g_", m_Opts.EntryPoint);
+  WriteHeader(pDisassembleResult, pBlob, varName,
+      StringRefUtf16("raytracing.hlsl.h"));
+
+
+  if (!needDisassembly)
+      return retVal;
 
   bool disassemblyWritten = false;
   if (!m_Opts.OutputHeader.empty()) {
