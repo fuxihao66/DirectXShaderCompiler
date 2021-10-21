@@ -34,6 +34,8 @@
 #include "llvm/IR/Module.h"
 #include "llvm/ADT/APSInt.h"
 
+#include "llvm/IR/InlineAsm.h"
+
 using namespace llvm;
 using namespace hlsl;
 
@@ -4919,19 +4921,24 @@ Value *TranslateTraceRay(CallInst *CI, IntrinsicOp IOP, OP::OpCode opcode,
 
   Value *opArg = hlslOP->GetU32Const(static_cast<unsigned>(opcode));
 
-  Value *Args[DXIL::OperandIndex::kTraceRayNumOp];
+  Value* Args[DXIL::OperandIndex::kTraceRayNumOp];
+  //Value *Args[1];
   Args[0] = opArg;
+
+  IRBuilder<> Builder(CI);
+
+
+  //Args[0] = CI->getArgOperand(2);
   for (unsigned i = 1; i < HLOperandIndex::kTraceRayRayDescOpIdx; i++) {
     Args[i] = CI->getArgOperand(i);
   }
-  IRBuilder<> Builder(CI);
-  // struct RayDesc
-  //{
-  //    float3 Origin;
-  //    float  TMin;
-  //    float3 Direction;
-  //    float  TMax;
-  //};
+  /* struct RayDesc
+  {
+      float3 Origin;
+      float  TMin;
+      float3 Direction;
+      float  TMax;
+  };*/
   Value *zeroIdx = hlslOP->GetU32Const(0);
   Value *origin = Builder.CreateGEP(rayDesc, {zeroIdx, zeroIdx});
   origin = Builder.CreateLoad(origin);
@@ -4960,8 +4967,29 @@ Value *TranslateTraceRay(CallInst *CI, IntrinsicOp IOP, OP::OpCode opcode,
   Type *Ty = payLoad->getType();
   Function *F = hlslOP->GetOpFunc(opcode, Ty);
 
+  //// xihaofu
+  //FunctionType* fTy;
+  ////fTy = FunctionType::get(nullptr, ArrayRef<Type*>(), false);
+  //fTy = hlslOP->GetOpFuncType(opcode, Ty);
 
-  return Builder.CreateCall(F, Args);
+
+
+  //// TODO: 返回值不同了（原本是void  这里是int32） RAUW的时候出错
+
+  //llvm::InlineAsm* IA =
+  //    llvm::InlineAsm::get(fTy, "call (), _optix_trace_1, (%0);", "r", true);   // fTy中定义的类型要和constraint对应
+  ////llvm::InlineAsm::get(fTy, "call (%0， %1), _optix_trace_1, (%2);", "=r,=r, r", true);   // fTy中定义的类型要和constraint对应
+  ////https://llvm.org/docs/LangRef.html#input-constraints
+
+
+  //llvm::CallInst* Result = Builder.CreateCall(IA, Args);
+  ////Result->addAttribute(llvm::AttributeSet::FunctionIndex,
+  //    //llvm::Attribute::NoUnwind);
+
+
+  //return Result;
+
+   return Builder.CreateCall(F, Args);
 }
 
 // RayQuery methods
@@ -5795,6 +5823,9 @@ static void TranslateBuiltinIntrinsic(CallInst *CI,
                                       HLOperationLowerHelper &helper,  HLObjectOperationLowerHelper *pObjHelper, bool &Translated) {
   unsigned opcode = hlsl::GetHLOpcode(CI);
   const IntrinsicLower &lower = gLowerTable[opcode];
+
+
+
   Value *Result =
       lower.LowerFunc(CI, lower.IntriOpcode, lower.DxilOpcode, helper, pObjHelper, Translated);
   if (Result)

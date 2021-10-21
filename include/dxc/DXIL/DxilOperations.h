@@ -25,7 +25,7 @@ class CallInst;
 #include "llvm/IR/Attributes.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/MapVector.h"
-
+#include "llvm/IR/DerivedTypes.h"
 #include "DxilConstants.h"
 #include <unordered_map>
 
@@ -44,6 +44,8 @@ public:
   void RefreshCache();
   void FixOverloadNames();
 
+
+  llvm::FunctionType* GetOpFuncType(OpCode opCode, llvm::Type* pOverloadType);
   llvm::Function *GetOpFunc(OpCode OpCode, llvm::Type *pOverloadType);
   const llvm::SmallMapVector<llvm::Type *, llvm::Function *, 8> &GetOpFuncList(OpCode OpCode) const;
   bool IsDxilOpUsed(OpCode opcode) const;
