@@ -5,6 +5,30 @@
 1. 学习LLVM IR 能用cpp emit出需要的nvvm ir并且成功编译成ptx
 2. 从AST出发  仿照SpirvEmitter写codegen（难点：很多debug相关的内容 影响阅读）
 
+HLOperationLower.cpp
+```
+//FunctionType* fTy;
+  ////fTy = FunctionType::get(nullptr, ArrayRef<Type*>(), false);
+  //fTy = hlslOP->GetOpFuncType(opcode, Ty);
+
+  return Builder.CreateCall(F, Args);
+
+
+  //// TODO: 返回值不同了（原本是void  这里是int32） RAUW的时候出错
+
+  //llvm::InlineAsm* IA =
+  //    llvm::InlineAsm::get(fTy, "call (), _optix_trace_1, (%0);", "r", true);   // fTy中定义的类型要和constraint对应
+  ////llvm::InlineAsm::get(fTy, "call (%0， %1), _optix_trace_1, (%2);", "=r,=r, r", true);   // fTy中定义的类型要和constraint对应
+  ////https://llvm.org/docs/LangRef.html#input-constraints
+
+
+  //llvm::CallInst* Result = Builder.CreateCall(IA, Args);
+  ////Result->addAttribute(llvm::AttributeSet::FunctionIndex,
+  //    //llvm::Attribute::NoUnwind);
+
+
+  //return Result;
+```
 ### 问题
 
 1. optix和hlsl的声明 等区别（比如加速结构   texture等）
