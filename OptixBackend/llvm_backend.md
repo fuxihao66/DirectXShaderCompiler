@@ -1,5 +1,5 @@
 # 路线
-
+https://zhuanlan.zhihu.com/p/436014980
 ### 方向
 
 1. 学习LLVM IR 能用cpp emit出需要的nvvm ir并且成功编译成ptx
