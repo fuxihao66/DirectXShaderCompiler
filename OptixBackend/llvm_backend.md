@@ -2,8 +2,8 @@
 https://zhuanlan.zhihu.com/p/436014980
 ### 方向
 
-1. 学习LLVM IR 能用cpp emit出需要的nvvm ir并且成功编译成ptx
-2. 从AST出发  仿照SpirvEmitter写codegen（难点：很多debug相关的内容 影响阅读）
+1. 学习LLVM IR 能用cpp emit出需要的nvvm ir并且成功编译成ptx  （根据官方教程和llvm例子中的inlineasm） （原本写的那个builder codegen丢失了 参照下面的inlineasm实例重新写）
+2. 从AST出发  仿照SpirvEmitter写codegen（难点：很多debug相关的内容 影响阅读） （参考TranslateNVVM.cpp里面摘抄的dxc）
 
 HLOperationLower.cpp
 ```
